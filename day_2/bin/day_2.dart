@@ -19,5 +19,6 @@ void main() {
   List<int> gameIDS = games.map((game) {
     return game.possible ? game.id : 0;
   }).toList();
+  print(gameIDS);
   print(gameIDS.sum);
 }

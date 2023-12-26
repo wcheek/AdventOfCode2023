@@ -1,6 +1,6 @@
 class Game {
-  bool? _possible;
   (int, Map<String, int>)? _gameInput;
+  bool? _possible;
 
   Game(String gameInfo, List<(String, int)> gameDeterminer) {
     _gameInput = parseGameInfo(gameInfo);
