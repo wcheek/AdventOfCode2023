@@ -3,15 +3,18 @@ import 'package:collection/collection.dart';
 class Game {
   (int, Map<String, List<int>>)? _gameInput;
   bool? _possible;
+  int? _minCubePower;
 
   Game(String gameInfo, List<(String, int)> gameDeterminer) {
     _gameInput = parseGameInfo(gameInfo);
     _possible = decideIfPossible(gameDeterminer);
+    _minCubePower = getMinCubePower();
   }
 
   int get id => _gameInput!.$1;
   bool get possible => _possible!;
   (int, Map<String, List<int>>) get game => _gameInput!;
+  int get minCubePower => _minCubePower!;
 
   static (int, Map<String, List<int>>) parseGameInfo(String gameInfo) {
     /// Outputs a record of (gameID, [(color, numCubes)]
@@ -72,6 +75,14 @@ class Game {
       }
     }
     return true;
+  }
+
+  int getMinCubePower() {
+    int power = 1;
+    _gameInput!.$2.forEach((color, values) {
+      power *= values.max;
+    });
+    return power;
   }
 }
 

@@ -19,6 +19,9 @@ void main() {
   List<int> gameIDS = games.map((game) {
     return game.possible ? game.id : 0;
   }).toList();
+  List<int> gamePowers = games.map((game) {
+    return game.minCubePower;
+  }).toList();
   print(gameIDS);
-  print(gameIDS.sum);
+  print(gamePowers.sum);
 }
