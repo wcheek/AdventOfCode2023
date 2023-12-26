@@ -2,10 +2,9 @@ class Game {
   bool? _possible;
   (int, Map<String, int>)? _gameInput;
 
-  Game(String gameInfo) {
-    _possible = false;
+  Game(String gameInfo, List<(String, int)> gameDeterminer) {
     _gameInput = parseGameInfo(gameInfo);
-    _possible = decideIfPossible([("red", 12), ("green", 13), ("blue", 14)]);
+    _possible = decideIfPossible(gameDeterminer);
   }
 
   int get id => _gameInput!.$1;
