@@ -1,23 +1,24 @@
 class Game {
   bool? _possible;
-  (int, List<(String, int)>)? _gameInput;
+  (int, Map<String, int>)? _gameInput;
 
   Game(String gameInfo) {
     _possible = false;
     _gameInput = parseGameInfo(gameInfo);
+    _possible = decideIfPossible([("red", 12), ("green", 13), ("blue", 14)]);
   }
 
   int get id => _gameInput!.$1;
   bool get possible => _possible!;
-  (int, List<(String, int)>) get game => _gameInput!;
+  (int, Map<String, int>) get game => _gameInput!;
 
-  static (int, List<(String, int)>) parseGameInfo(String gameInfo) {
+  static (int, Map<String, int>) parseGameInfo(String gameInfo) {
     /// Outputs a record of (gameID, [(color, numCubes)]
     // Eg: Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
     // (1, [("red", 4), ("green", 6), ("blue", 9)])
     List<String> gameInfoPieces = getGameInfoPieces(gameInfo);
     int id = int.parse(gameInfoPieces[0].split(" ")[1]);
-    List<(String, int)> parsedGameInfoPieces =
+    Map<String, int> parsedGameInfoPieces =
         parseGameInfoPieces(gameInfoPieces[1]);
     return (id, parsedGameInfoPieces);
   }
@@ -27,7 +28,7 @@ class Game {
     return gameInfo.split(":").map((el) => el.trim()).toList();
   }
 
-  static List<(String, int)> parseGameInfoPieces(String gameInfoColorNums) {
+  static Map<String, int> parseGameInfoPieces(String gameInfoColorNums) {
     /// Input looks like "3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"
     // I want [("red", 4), ("green", 6), ("blue", 9)]
     int redScore = 0;
@@ -60,7 +61,16 @@ class Game {
         }
       });
     }
-    return [("red", redScore), ("green", greenScore), ("blue", blueScore)];
+    return {"red": redScore, "green": greenScore, "blue": blueScore};
+  }
+
+  bool decideIfPossible(List<(String, int)> gameDeterminer) {
+    for ((String, int) colorNum in gameDeterminer) {
+      if (_gameInput!.$2[colorNum.$1]! > colorNum.$2) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 

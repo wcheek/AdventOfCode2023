@@ -9,7 +9,7 @@ void main() {
   });
   final game = Game(testString);
   test('Parse game input', () {
-    expect(game.game.$2, [("red", 5), ("green", 4), ("blue", 9)]);
+    expect(game.game.$2, {"red": 5, "green": 4, "blue": 9});
   }, skip: false);
   test("Check ID", () {
     expect(game.id, 1);
