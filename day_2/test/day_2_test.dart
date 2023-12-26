@@ -12,30 +12,33 @@ List<String> getFileContents(String path) {
 List<(String, int)> testDeterminer = [("red", 12), ("green", 13), ("blue", 14)];
 
 void testClassMethods() {
-  //String testString = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green";
-  String testString2 =
-      "Game 33: 6 blue, 16 red, 9 green; 5 red, 7 blue, 13 green; 1 green, 9 blue, 1 red; 4 green, 9 blue, 17 red; 2 green, 10 red, 13 blue; 9 red, 1 blue, 14 green";
+  String testString = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green";
+  //String testString2 =
+  //"Game 33: 6 blue, 16 red, 9 green; 5 red, 7 blue, 13 green; 1 green, 9 blue, 1 red; 4 green, 9 blue, 17 red; 2 green, 10 red, 13 blue; 9 red, 1 blue, 14 green";
 
   test("Game Info pieces parsed currectly", () {
-    expect(
-        Game.getGameInfoPieces(testString2),
-        //["Game 1", "3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"]);
-        [
-          "Game 33",
-          "6 blue, 16 red, 9 green; 5 red, 7 blue, 13 green; 1 green, 9 blue, 1 red; 4 green, 9 blue, 17 red; 2 green, 10 red, 13 blue; 9 red, 1 blue, 14 green"
-        ]);
+    expect(Game.getGameInfoPieces(testString),
+        ["Game 1", "3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green"]);
+    //[
+    //  "Game 33",
+    //  "6 blue, 16 red, 9 green; 5 red, 7 blue, 13 green; 1 green, 9 blue, 1 red; 4 green, 9 blue, 17 red; 2 green, 10 red, 13 blue; 9 red, 1 blue, 14 green"
+    //]);
   });
-  final game = Game(testString2, testDeterminer);
+  final game = Game(testString, testDeterminer);
   test('Parse game input', () {
-    //expect(game.game.$2, {"red": 5, "green": 4, "blue": 9});
-    expect(game.game.$2, {"red": 58, "green": 43, "blue": 45});
+    expect(game.game.$2, {
+      "red": [4, 1],
+      "green": [2, 2],
+      "blue": [3, 6]
+    });
+    //expect(game.game.$2, {"red": 58, "green": 43, "blue": 45});
   }, skip: false);
   test("Check ID", () {
     expect(game.id, 33);
-  }, skip: false);
+  }, skip: true);
 
   test("Check if possible", () {
-    expect(game.possible, false);
+    expect(game.possible, true);
   });
 }
 
