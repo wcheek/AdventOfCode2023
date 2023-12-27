@@ -11,7 +11,7 @@ void testLineMethods() {
 
   test("Get nums in line", () {
     expect(
-        line.numsInLineInfo!.map((n) => n.$1),
+        line.numsInLineInfo!.map((n) => n.number),
         equals([
           733,
           289,
@@ -26,7 +26,7 @@ void testLineMethods() {
 
   test("Get num positions in line", () {
     expect(
-        line.numsInLineInfo!.map((n) => n.$2),
+        line.numsInLineInfo!.map((n) => n.numIndices),
         equals([
           [3, 4, 5],
           [13, 14, 15],
@@ -92,6 +92,33 @@ void testMachineSchemaMethods() {
         equals(prevLineStr));
     expect(machineSchema.getLineByLineNum(currentLine.lineNum! + 1).toString(),
         equals(nextLineStr));
+  });
+
+  group("Num shifting methods", () {
+    late List<(Set<int>, Set<int>)> leftTestSets;
+    late List<(Set<int>, Set<int>)> rightTestSets;
+    setUp(() {
+      leftTestSets = [
+        ({1, 2, 3}, {0, 1, 2}),
+        ({0, 1, 2}, {0, 1}),
+        ({0, 1}, {0}),
+      ];
+      rightTestSets = [
+        ({139, 2, 3}, {3, 4}),
+        ({45, 46}, {46, 47}),
+        ({0}, {1}),
+      ];
+    });
+    test("Shift set left", () {
+      for (var testSet in leftTestSets) {
+        expect(MachineSchema.shiftSetLeft(testSet.$1, 1), equals(testSet.$2));
+      }
+    });
+    test("Shift set right", () {
+      for (var testSet in rightTestSets) {
+        expect(MachineSchema.shiftSetRight(testSet.$1, 1), equals(testSet.$2));
+      }
+    });
   });
 }
 

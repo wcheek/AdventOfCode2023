@@ -85,13 +85,23 @@ class MachineSchema {
     lines.map((currentLine) {
       var prevLine = getLineByLineNum(currentLine.lineNum! - 1);
       var nextLine = getLineByLineNum(currentLine.lineNum! + 1);
-      currentLine.numsInLineInfo!.map((numberInfo) {
-        List<int> positions = numberInfo.numIndices!;
-        for (int pos in positions) {
-          if (prevLine.symPositions!.contains(pos) |
-              nextLine.symPositions!.contains(pos)) {
+
+      var prevLineSymPositions = prevLine.symPositions!;
+      var shiftLeftPrevLineSymPositions = shiftSetLeft(prevLineSymPositions, 1);
+      var shiftRightPrevLineSymPositions =
+          shiftSetRight(prevLineSymPositions, 1);
+
+      var nextLineSymPositions = nextLine.symPositions!;
+      var shiftLeftNextLineSymPositions = shiftSetLeft(nextLineSymPositions, 1);
+      var shiftRightNextLineSymPositions =
+          shiftSetRight(nextLineSymPositions, 1);
+
+      currentLine.numsInLineInfo!.map((currentNumInfo) {
+        for (int pos in currentNumInfo.numIndices!) {
+          if (prevLineSymPositions.contains(pos) |
+              nextLineSymPositions.contains(pos)) {
             // Normal above below case
-            numberInfo.adjacentToSymbol = true;
+            currentNumInfo.adjacentToSymbol = true;
           }
         }
       });
@@ -104,5 +114,33 @@ class MachineSchema {
     } on RangeError {
       return LineInfo("", null);
     }
+  }
+
+  static Set<int?> shiftSetLeft(Set<int> origSet, int shiftValue) {
+    Set<int?> returnSet = origSet
+        .map((val) => val - shiftValue >= 0 ? val - shiftValue : null)
+        .toSet();
+    returnSet.retainWhere((val) {
+      if (val == null) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+    return returnSet;
+  }
+
+  static Set<int?> shiftSetRight(Set<int> origSet, int shiftValue) {
+    Set<int?> returnSet = origSet
+        .map((val) => val + shiftValue < 140 ? val + shiftValue : null)
+        .toSet();
+    returnSet.retainWhere((val) {
+      if (val == null) {
+        return false;
+      } else {
+        return true;
+      }
+    });
+    return returnSet;
   }
 }
