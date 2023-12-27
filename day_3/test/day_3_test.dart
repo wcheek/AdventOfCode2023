@@ -67,31 +67,36 @@ void testMachineSchemaMethods() {
     expect(machineSchema.lines.length, equals(10));
   });
 
-  test("Previous line 0 edgecase", () {
-    expect(
-        machineSchema
-            .getLineByLineNum(machineSchema.lines[0].lineNum! - 1)
-            .toString(),
-        equals(LineInfo("", null).toString()));
-  });
-  test("Next line END edgecase", () {
-    expect(
-        machineSchema
-            .getLineByLineNum(
-                machineSchema.lines[machineSchema.lines.length - 1].lineNum! +
-                    1)
-            .toString(),
-        equals(LineInfo("", null).toString()));
-  }, skip: false);
+  group("Line selection", () {
+    test("Previous line 0 edgecase", () {
+      expect(
+          machineSchema
+              .getLineByLineNum(machineSchema.lines[0].lineNum! - 1)
+              .toString(),
+          equals(LineInfo("", null).toString()));
+    });
 
-  test("Surrounding lines normal case", () {
-    var prevLineStr = machineSchema.lines[4].toString();
-    var currentLine = machineSchema.lines[5];
-    var nextLineStr = machineSchema.lines[6].toString();
-    expect(machineSchema.getLineByLineNum(currentLine.lineNum! - 1).toString(),
-        equals(prevLineStr));
-    expect(machineSchema.getLineByLineNum(currentLine.lineNum! + 1).toString(),
-        equals(nextLineStr));
+    test("Next line END edgecase", () {
+      expect(
+          machineSchema
+              .getLineByLineNum(
+                  machineSchema.lines[machineSchema.lines.length - 1].lineNum! +
+                      1)
+              .toString(),
+          equals(LineInfo("", null).toString()));
+    }, skip: false);
+
+    test("Surrounding lines normal case", () {
+      var prevLineStr = machineSchema.lines[4].toString();
+      var currentLine = machineSchema.lines[5];
+      var nextLineStr = machineSchema.lines[6].toString();
+      expect(
+          machineSchema.getLineByLineNum(currentLine.lineNum! - 1).toString(),
+          equals(prevLineStr));
+      expect(
+          machineSchema.getLineByLineNum(currentLine.lineNum! + 1).toString(),
+          equals(nextLineStr));
+    });
   });
 
   group("Num shifting methods", () {
@@ -119,6 +124,10 @@ void testMachineSchemaMethods() {
         expect(MachineSchema.shiftSetRight(testSet.$1, 1), equals(testSet.$2));
       }
     });
+  });
+  test("Final answer with correct nums", () {
+    expect(machineSchema.numsAdjacent,
+        equals([467, 35, 633, 617, 592, 755, 664, 598]));
   });
 }
 

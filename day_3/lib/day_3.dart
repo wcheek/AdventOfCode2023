@@ -71,6 +71,7 @@ class LineInfo {
 
 class MachineSchema {
   List<LineInfo>? _lines;
+  List<int>? numsAdjacent;
   MachineSchema({String filePath = "lib/testInput.txt"}) {
     final fileInput = getFileContents(filePath);
     _lines = [];
@@ -78,34 +79,67 @@ class MachineSchema {
       _lines?.add(LineInfo(line, ind));
     });
     testLinesForAdjacency(_lines!);
+    numsAdjacent = getNumsAdjacent(_lines!);
   }
   List<LineInfo> get lines => _lines!;
 
   void testLinesForAdjacency(List<LineInfo> lines) {
-    lines.map((currentLine) {
+    for (LineInfo currentLine in lines) {
       var prevLine = getLineByLineNum(currentLine.lineNum! - 1);
       var nextLine = getLineByLineNum(currentLine.lineNum! + 1);
 
+      // Current line
+      var currentLineSymPositions = currentLine.symPositions!;
+      var shiftLeftcurrentLineSymPositions =
+          shiftSetLeft(currentLineSymPositions, 1);
+      var shiftRightcurrentLineSymPositions =
+          shiftSetRight(currentLineSymPositions, 1);
+
+      // Previous line
       var prevLineSymPositions = prevLine.symPositions!;
       var shiftLeftPrevLineSymPositions = shiftSetLeft(prevLineSymPositions, 1);
       var shiftRightPrevLineSymPositions =
           shiftSetRight(prevLineSymPositions, 1);
 
+      // Next line
       var nextLineSymPositions = nextLine.symPositions!;
       var shiftLeftNextLineSymPositions = shiftSetLeft(nextLineSymPositions, 1);
       var shiftRightNextLineSymPositions =
           shiftSetRight(nextLineSymPositions, 1);
 
-      currentLine.numsInLineInfo!.map((currentNumInfo) {
+      for (NumberInfo currentNumInfo in currentLine.numsInLineInfo!) {
         for (int pos in currentNumInfo.numIndices!) {
-          if (prevLineSymPositions.contains(pos) |
-              nextLineSymPositions.contains(pos)) {
-            // Normal above below case
+          if (
+              // Normal above below case
+              (prevLineSymPositions.contains(pos) |
+                      nextLineSymPositions.contains(pos)) |
+                  // Adjacent case
+                  (shiftLeftcurrentLineSymPositions.contains(pos) |
+                      shiftRightcurrentLineSymPositions.contains(pos)) |
+
+                  // left diagonals
+                  (shiftLeftPrevLineSymPositions.contains(pos) |
+                      shiftLeftNextLineSymPositions.contains(pos)) |
+                  // right diagonals
+                  (shiftRightPrevLineSymPositions.contains(pos) |
+                      shiftRightNextLineSymPositions.contains(pos))) {
             currentNumInfo.adjacentToSymbol = true;
           }
         }
-      });
-    });
+      }
+    }
+  }
+
+  List<int> getNumsAdjacent(List<LineInfo> lines) {
+    List<int> returnInts = [];
+    for (LineInfo line in lines) {
+      for (NumberInfo numInfo in line.numsInLineInfo!) {
+        if (numInfo.adjacentToSymbol!) {
+          returnInts.add(numInfo.number!);
+        }
+      }
+    }
+    return returnInts;
   }
 
   LineInfo getLineByLineNum(int lineNum) {
