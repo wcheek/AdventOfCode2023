@@ -8,28 +8,33 @@ List<String> getFileContents(String path) {
 
 class LineInfo {
   String? rawLine;
-  List<int>? numsInLine;
+  List<(int, List<int>)>? numsInLineInfo;
 
   RegExp numRegex = RegExp(r"(\d+)");
 
   LineInfo(String line) {
     rawLine = line;
-    numsInLine = getNumsInLine(line);
+    numsInLineInfo = getNumsInLine(line);
   }
-  List<int> getNumsInLine(String line) {
-    return numRegex
-        .allMatches(line)
-        .map((match) => int.parse(match.group(0)!))
-        .toList();
+  List<(int, List<int>)> getNumsInLine(String line) {
+    var matches = numRegex.allMatches(line);
+    var returnList = matches.map((match) {
+      int num = int.parse(match.group(0)!);
+      List<int> pos = [for (var i = match.start; i < match.end; i += 1) i];
+      return (num, pos);
+    }).toList();
+    return returnList;
   }
 }
 
 class MachineSchema {
+  List<LineInfo>? _lines;
   MachineSchema({String filePath = "lib/testInput.txt"}) {
     final fileInput = getFileContents(filePath);
-    List<LineInfo> lines = [];
+    _lines = [];
     for (String line in fileInput) {
-      lines.add(LineInfo(line));
+      _lines?.add(LineInfo(line));
     }
   }
+  List<LineInfo> get lines => _lines!;
 }
