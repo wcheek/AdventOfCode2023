@@ -88,17 +88,9 @@ void testMachineSchemaMethods() {
     var prevLineStr = machineSchema.lines[4].toString();
     var currentLine = machineSchema.lines[5];
     var nextLineStr = machineSchema.lines[6].toString();
-    expect(
-        machineSchema
-            .getLineByLineNum(
-                machineSchema.lines[currentLine.lineNum! - 1].lineNum!)
-            .toString(),
+    expect(machineSchema.getLineByLineNum(currentLine.lineNum! - 1).toString(),
         equals(prevLineStr));
-    expect(
-        machineSchema
-            .getLineByLineNum(
-                machineSchema.lines[currentLine.lineNum! + 1].lineNum!)
-            .toString(),
+    expect(machineSchema.getLineByLineNum(currentLine.lineNum! + 1).toString(),
         equals(nextLineStr));
   });
 }

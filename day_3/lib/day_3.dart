@@ -6,10 +6,23 @@ List<String> getFileContents(String path) {
   return contents;
 }
 
+class NumberInfo {
+  int? number;
+  List<int>? numIndices;
+  bool? adjacentToSymbol;
+
+  NumberInfo(int inputNumber, List<int> indexRange) {
+    number = inputNumber;
+    numIndices = indexRange;
+    adjacentToSymbol = false;
+  }
+}
+
 class LineInfo {
   int? lineNum;
-  List<(int pos, List<int> numsInLine, bool adjacency)>? numsInLineInfo;
+  List<NumberInfo>? numsInLineInfo;
   List<(String, int)>? symsInLineInfo;
+  Set<int>? symPositions;
 
   RegExp numRegex = RegExp(r"(\d+)");
   RegExp symsRegex = RegExp(r"[^\w\d\.]");
@@ -18,12 +31,13 @@ class LineInfo {
     lineNum = lineNumber;
     numsInLineInfo = getNumsInLine(line);
     symsInLineInfo = getSymsInLine(line);
+    symPositions = symsInLineInfo!.map((symInfo) => symInfo.$2).toSet();
   }
 
   @override
   String toString() {
     String stringifiedObj = numsInLineInfo!.map((el) {
-      return "${el.$1}: ${el.$2[0]}";
+      return "${el.number}: ${el.numIndices![0]}";
     }).toString();
     if (lineNum != null) {
       return "Line #$lineNum contains $stringifiedObj";
@@ -32,13 +46,15 @@ class LineInfo {
     }
   }
 
-  List<(int, List<int>, bool)> getNumsInLine(String line) {
+  List<NumberInfo> getNumsInLine(String line) {
     var matches = numRegex.allMatches(line);
-    var returnList = matches.map((match) {
+    List<NumberInfo>? returnList = [];
+    for (var match in matches) {
       int num = int.parse(match.group(0)!);
       List<int> pos = [for (var i = match.start; i < match.end; i += 1) i];
-      return (num, pos, false);
-    }).toList();
+      returnList.add(NumberInfo(num, pos));
+    }
+
     return returnList;
   }
 
@@ -69,6 +85,16 @@ class MachineSchema {
     lines.map((currentLine) {
       var prevLine = getLineByLineNum(currentLine.lineNum! - 1);
       var nextLine = getLineByLineNum(currentLine.lineNum! + 1);
+      currentLine.numsInLineInfo!.map((numberInfo) {
+        List<int> positions = numberInfo.numIndices!;
+        for (int pos in positions) {
+          if (prevLine.symPositions!.contains(pos) |
+              nextLine.symPositions!.contains(pos)) {
+            // Normal above below case
+            numberInfo.adjacentToSymbol = true;
+          }
+        }
+      });
     });
   }
 
