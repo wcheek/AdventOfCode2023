@@ -48,6 +48,13 @@ void testLineMethods() {
     expect(line.symsInLineInfo!.map((n) => n.$2),
         equals([10, 32, 36, 43, 57, 74, 80, 85, 100, 108]));
   });
+
+  test("Correct printing", () {
+    expect(
+        line.toString(),
+        equals(
+            "Line #0 contains (733: 3, 289: 13, 262: 18, 520: 26, 161: 47, 462: 51, 450: 64, 183: 92)"));
+  });
 }
 
 void testMachineSchemaMethods() {
@@ -58,6 +65,41 @@ void testMachineSchemaMethods() {
 
   test("Num lines correct", () {
     expect(machineSchema.lines.length, equals(10));
+  });
+
+  test("Previous line 0 edgecase", () {
+    expect(
+        machineSchema
+            .getLineByLineNum(machineSchema.lines[0].lineNum! - 1)
+            .toString(),
+        equals(LineInfo("", null).toString()));
+  });
+  test("Next line END edgecase", () {
+    expect(
+        machineSchema
+            .getLineByLineNum(
+                machineSchema.lines[machineSchema.lines.length - 1].lineNum! +
+                    1)
+            .toString(),
+        equals(LineInfo("", null).toString()));
+  }, skip: false);
+
+  test("Surrounding lines normal case", () {
+    var prevLineStr = machineSchema.lines[4].toString();
+    var currentLine = machineSchema.lines[5];
+    var nextLineStr = machineSchema.lines[6].toString();
+    expect(
+        machineSchema
+            .getLineByLineNum(
+                machineSchema.lines[currentLine.lineNum! - 1].lineNum!)
+            .toString(),
+        equals(prevLineStr));
+    expect(
+        machineSchema
+            .getLineByLineNum(
+                machineSchema.lines[currentLine.lineNum! + 1].lineNum!)
+            .toString(),
+        equals(nextLineStr));
   });
 }
 
