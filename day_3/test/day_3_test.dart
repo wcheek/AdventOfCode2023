@@ -43,6 +43,11 @@ void testLineMethods() {
     expect(line.symsInLineInfo!.map((n) => n.$1),
         equals(["+", "@", "\$", "-", "=", "*", "%", "/", "#", "&"]));
   });
+
+  test("Get symbol positions in line", () {
+    expect(line.symsInLineInfo!.map((n) => n.$2),
+        equals([10, 32, 36, 43, 57, 74, 80, 85, 100, 108]));
+  });
 }
 
 void testMachineSchemaMethods() {
