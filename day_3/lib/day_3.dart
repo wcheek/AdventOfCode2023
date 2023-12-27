@@ -12,7 +12,8 @@ class LineInfo {
   List<(String, int)>? symsInLineInfo;
 
   RegExp numRegex = RegExp(r"(\d+)");
-  RegExp symsRegex = RegExp(r"[\+\@\$\-\=\*\/\#\&\%]");
+  // RegExp symsRegex = RegExp(r"[\+\@\$\-\=\*\/\#\&\%]");
+  RegExp symsRegex = RegExp(r"[^\w\d\.]");
 
   LineInfo(String line, int lineNum) {
     lineNum = lineNum;
