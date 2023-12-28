@@ -1,5 +1,6 @@
-import 'package:day_4/day_4.dart' as day_4;
+import 'package:day_4/day_4.dart';
 
-void main(List<String> arguments) {
-  print('Hello world: ${day_4.calculate()}!');
+void main() {
+  Game game = Game("inputs/input.txt");
+  print(game.totalPoints);
 }
