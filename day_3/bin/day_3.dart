@@ -3,5 +3,6 @@ import 'package:collection/collection.dart';
 
 void main(List<String> arguments) {
   MachineSchema machineSchema = MachineSchema(filePath: "lib/input.txt");
-  print(machineSchema.numsAdjacent!.sum);
+  print("Sum of adjacent numbers: ${machineSchema.numsAdjacent!.sum}");
+  print("Total gear ratio: ${machineSchema.totalGearRatio}");
 }

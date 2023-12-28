@@ -185,10 +185,8 @@ class MachineSchema {
     List<SymbolsInfo> returnSyms = [];
     for (LineInfo line in lines) {
       for (SymbolsInfo sym in line.symsInLineInfo!) {
-        if (sym.symbol == "*") {
-          if (sym.nearbyNums.length == 2) {
-            returnSyms.add(sym);
-          }
+        if ((sym.symbol == "*") & (sym.nearbyNums.length == 2)) {
+          returnSyms.add(sym);
         }
       }
     }
