@@ -25,7 +25,7 @@ class LineInfo {
   final int? lineNum;
 
   List<NumberInfo>? numsInLineInfo;
-  List<(String, int)>? symsInLineInfo;
+  List<SymbolsInfo>? symsInLineInfo;
   Set<int>? symPositions;
 
   RegExp numRegex = RegExp(r"(\d+)");
@@ -34,7 +34,7 @@ class LineInfo {
   LineInfo(String line, this.lineNum) {
     numsInLineInfo = getNumsInLine(line);
     symsInLineInfo = getSymsInLine(line);
-    symPositions = symsInLineInfo!.map((symInfo) => symInfo.$2).toSet();
+    symPositions = symsInLineInfo!.map((symInfo) => symInfo.position).toSet();
   }
 
   @override
@@ -61,14 +61,16 @@ class LineInfo {
     return returnList;
   }
 
-  List<(String, int)> getSymsInLine(String line) {
+  List<SymbolsInfo> getSymsInLine(String line) {
     var matches = symsRegex.allMatches(line);
-    var returnList = matches.map((match) {
+    List<SymbolsInfo> symbolsList = [];
+    // var returnList = matches.map((match) {
+    for (var match in matches) {
       String sym = match.group(0)!;
       int pos = match.start;
-      return (sym, pos);
-    }).toList();
-    return returnList;
+      symbolsList.add(SymbolsInfo(sym, pos));
+    }
+    return symbolsList;
   }
 }
 

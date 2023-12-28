@@ -40,12 +40,12 @@ void testLineMethods() {
   });
 
   test("Get symbols in line", () {
-    expect(line.symsInLineInfo!.map((n) => n.$1),
+    expect(line.symsInLineInfo!.map((n) => n.symbol),
         equals(["+", "@", "\$", "-", "=", "*", "%", "/", "#", "&"]));
   });
 
   test("Get symbol positions in line", () {
-    expect(line.symsInLineInfo!.map((n) => n.$2),
+    expect(line.symsInLineInfo!.map((n) => n.position),
         equals([10, 32, 36, 43, 57, 74, 80, 85, 100, 108]));
   });
 
