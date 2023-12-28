@@ -7,19 +7,23 @@ List<String> getFileContents(String path) {
 }
 
 class NumberInfo {
-  int? number;
-  List<int>? numIndices;
-  bool? adjacentToSymbol;
+  final int number;
+  final List<int> numIndices;
+  bool adjacentToSymbol = false;
 
-  NumberInfo(int inputNumber, List<int> indexRange) {
-    number = inputNumber;
-    numIndices = indexRange;
-    adjacentToSymbol = false;
-  }
+  NumberInfo(this.number, this.numIndices);
+}
+
+class SymbolsInfo {
+  final String symbol;
+  final int position;
+
+  SymbolsInfo(this.symbol, this.position);
 }
 
 class LineInfo {
-  int? lineNum;
+  final int? lineNum;
+
   List<NumberInfo>? numsInLineInfo;
   List<(String, int)>? symsInLineInfo;
   Set<int>? symPositions;
@@ -27,8 +31,7 @@ class LineInfo {
   RegExp numRegex = RegExp(r"(\d+)");
   RegExp symsRegex = RegExp(r"[^\w\d\.]");
 
-  LineInfo(String line, int? lineNumber) {
-    lineNum = lineNumber;
+  LineInfo(String line, this.lineNum) {
     numsInLineInfo = getNumsInLine(line);
     symsInLineInfo = getSymsInLine(line);
     symPositions = symsInLineInfo!.map((symInfo) => symInfo.$2).toSet();
@@ -37,7 +40,7 @@ class LineInfo {
   @override
   String toString() {
     String stringifiedObj = numsInLineInfo!.map((el) {
-      return "${el.number}: ${el.numIndices![0]}";
+      return "${el.number}: ${el.numIndices[0]}";
     }).toString();
     if (lineNum != null) {
       return "Line #$lineNum contains $stringifiedObj";
@@ -72,6 +75,7 @@ class LineInfo {
 class MachineSchema {
   List<LineInfo>? _lines;
   List<int>? numsAdjacent;
+
   MachineSchema({String filePath = "lib/testInput.txt"}) {
     final fileInput = getFileContents(filePath);
     _lines = [];
@@ -108,7 +112,7 @@ class MachineSchema {
           shiftSetRight(nextLineSymPositions, 1);
 
       for (NumberInfo currentNumInfo in currentLine.numsInLineInfo!) {
-        for (int pos in currentNumInfo.numIndices!) {
+        for (int pos in currentNumInfo.numIndices) {
           if (
               // Normal above below case
               (prevLineSymPositions.contains(pos) |
@@ -134,8 +138,8 @@ class MachineSchema {
     List<int> returnInts = [];
     for (LineInfo line in lines) {
       for (NumberInfo numInfo in line.numsInLineInfo!) {
-        if (numInfo.adjacentToSymbol!) {
-          returnInts.add(numInfo.number!);
+        if (numInfo.adjacentToSymbol) {
+          returnInts.add(numInfo.number);
         }
       }
     }

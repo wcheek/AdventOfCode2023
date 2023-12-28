@@ -134,7 +134,4 @@ void testMachineSchemaMethods() {
 void main() {
   group("Test Line Methods", testLineMethods);
   group("Test machine schema methods", testMachineSchemaMethods);
-  // test('Correct part numbers', () {
-  //   expect(getCorrectPartNumbers(), [467, 35, 633, 617, 592, 755, 664, 598]);
-  // }, skip: true);
 }
