@@ -135,24 +135,24 @@ class MachineSchema {
               symPosBools["rightDiagonals"]!(pos)) {
             // adjacent symbol is in prev or next line
             currentNumInfo.adjacentToSymbol = true;
-            for (SymbolsInfo sym in nextLine.symsInLineInfo!) {
-              if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
-                sym.nearbyNums!.add(currentNumInfo.number);
-              }
-            }
-            for (SymbolsInfo sym in prevLine.symsInLineInfo!) {
-              if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
-                sym.nearbyNums!.add(currentNumInfo.number);
-              }
-            }
+            // for (SymbolsInfo sym in nextLine.symsInLineInfo!) {
+            //   if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
+            //     sym.nearbyNums!.add(currentNumInfo.number);
+            //   }
+            // }
+            // for (SymbolsInfo sym in prevLine.symsInLineInfo!) {
+            //   if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
+            //     sym.nearbyNums!.add(currentNumInfo.number);
+            //   }
+            // }
           } else if (symPosBools["leftRightAdjacent"]!(pos)) {
             // Adjacent symbol is in current row
             currentNumInfo.adjacentToSymbol = true;
-            for (SymbolsInfo sym in currentLine.symsInLineInfo!) {
-              if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
-                sym.nearbyNums!.add(currentNumInfo.number);
-              }
-            }
+            // for (SymbolsInfo sym in currentLine.symsInLineInfo!) {
+            //   if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
+            //     sym.nearbyNums!.add(currentNumInfo.number);
+            //   }
+            // }
           }
         }
       }
