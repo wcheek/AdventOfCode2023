@@ -1,11 +1,5 @@
 import 'dart:io';
 
-List<String> getFileContents(String path) {
-  File input = File(path);
-  List<String> contents = input.readAsLinesSync();
-  return contents;
-}
-
 class NumberInfo {
   final int number;
   final List<int> numIndices;
@@ -17,6 +11,7 @@ class NumberInfo {
 class SymbolsInfo {
   final String symbol;
   final int position;
+  List<int>? nearbyNums;
 
   SymbolsInfo(this.symbol, this.position);
 }
@@ -113,22 +108,31 @@ class MachineSchema {
       var shiftRightNextLineSymPositions =
           shiftSetRight(nextLineSymPositions, 1);
 
+      Map<String, Function> symPosBools = {
+        "aboveBelow": (pos) {
+          return (prevLineSymPositions.contains(pos) |
+              nextLineSymPositions.contains(pos));
+        },
+        "leftRightAdjacent": (pos) {
+          return (shiftLeftcurrentLineSymPositions.contains(pos) |
+              shiftRightcurrentLineSymPositions.contains(pos));
+        },
+        "leftDiagonals": (pos) {
+          return (shiftLeftPrevLineSymPositions.contains(pos) |
+              shiftLeftNextLineSymPositions.contains(pos));
+        },
+        "rightDiagonals": (pos) {
+          return (shiftRightPrevLineSymPositions.contains(pos) |
+              shiftRightNextLineSymPositions.contains(pos));
+        }
+      };
+
       for (NumberInfo currentNumInfo in currentLine.numsInLineInfo!) {
         for (int pos in currentNumInfo.numIndices) {
-          if (
-              // Normal above below case
-              (prevLineSymPositions.contains(pos) |
-                      nextLineSymPositions.contains(pos)) |
-                  // Adjacent case
-                  (shiftLeftcurrentLineSymPositions.contains(pos) |
-                      shiftRightcurrentLineSymPositions.contains(pos)) |
-
-                  // left diagonals
-                  (shiftLeftPrevLineSymPositions.contains(pos) |
-                      shiftLeftNextLineSymPositions.contains(pos)) |
-                  // right diagonals
-                  (shiftRightPrevLineSymPositions.contains(pos) |
-                      shiftRightNextLineSymPositions.contains(pos))) {
+          if (symPosBools["aboveBelow"]!(pos) |
+              symPosBools["leftRightAdjacent"]!(pos) |
+              symPosBools["leftDiagonals"]!(pos) |
+              symPosBools["rightDiagonals"]!(pos)) {
             currentNumInfo.adjacentToSymbol = true;
           }
         }
@@ -182,5 +186,11 @@ class MachineSchema {
       }
     });
     return returnSet;
+  }
+
+  static List<String> getFileContents(String path) {
+    File input = File(path);
+    List<String> contents = input.readAsLinesSync();
+    return contents;
   }
 }
