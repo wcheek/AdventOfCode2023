@@ -9,8 +9,6 @@ class Card {
   List<int> winningNumbers = [];
   int points = 0;
 
-  RegExp numRegex = RegExp(r"(\d{1,2})");
-
   Card(String cardString) {
     parseCardString(cardString);
     getWinningNumbers();
@@ -21,7 +19,7 @@ class Card {
     List<String> splitOnColon = cardString.split(":");
     List<String> splitOnBracket = splitOnColon[1].split("|");
 
-    cardNum = int.parse(splitOnColon[0].split(" ")[1]);
+    cardNum = int.parse(splitOnColon[0].split(RegExp(r"\s{1,3}"))[1]);
     numbersOnCard = parseNumberString(splitOnBracket[0]);
     numbersIHave = parseNumberString(splitOnBracket[1]);
   }
@@ -29,9 +27,10 @@ class Card {
   List<int> parseNumberString(String numbersString) {
     List<int> returnInts = [];
 
-    var matches = numRegex.allMatches(numbersString);
+    var matches = RegExp(r"\d{1,2}").allMatches(numbersString);
     for (var match in matches) {
-      returnInts.add(int.parse(match.group(0)!));
+      int parsedInt = int.parse(match.group(0)!);
+      returnInts.add(parsedInt);
     }
     return returnInts;
   }
