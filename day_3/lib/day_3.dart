@@ -11,7 +11,7 @@ class NumberInfo {
 class SymbolsInfo {
   final String symbol;
   final int position;
-  List<int>? nearbyNums;
+  Set<int>? nearbyNums;
 
   SymbolsInfo(this.symbol, this.position);
 }
@@ -84,29 +84,30 @@ class MachineSchema {
   }
   List<LineInfo> get lines => _lines!;
 
+  (Set<int?>, Set<int?>) getShiftedSymPosition(Set<int> currentPos) {
+    return (shiftSetLeft(currentPos, 1), shiftSetRight(currentPos, 1));
+  }
+
   void testLinesForAdjacency(List<LineInfo> lines) {
     for (LineInfo currentLine in lines) {
       var prevLine = getLineByLineNum(currentLine.lineNum! - 1);
       var nextLine = getLineByLineNum(currentLine.lineNum! + 1);
 
       // Current line
-      var currentLineSymPositions = currentLine.symPositions!;
-      var shiftLeftcurrentLineSymPositions =
-          shiftSetLeft(currentLineSymPositions, 1);
-      var shiftRightcurrentLineSymPositions =
-          shiftSetRight(currentLineSymPositions, 1);
+      var (
+        shiftLeftcurrentLineSymPositions,
+        shiftRightcurrentLineSymPositions
+      ) = getShiftedSymPosition(currentLine.symPositions!);
 
       // Previous line
       var prevLineSymPositions = prevLine.symPositions!;
-      var shiftLeftPrevLineSymPositions = shiftSetLeft(prevLineSymPositions, 1);
-      var shiftRightPrevLineSymPositions =
-          shiftSetRight(prevLineSymPositions, 1);
+      var (shiftLeftPrevLineSymPositions, shiftRightPrevLineSymPositions) =
+          getShiftedSymPosition(prevLineSymPositions);
 
       // Next line
       var nextLineSymPositions = nextLine.symPositions!;
-      var shiftLeftNextLineSymPositions = shiftSetLeft(nextLineSymPositions, 1);
-      var shiftRightNextLineSymPositions =
-          shiftSetRight(nextLineSymPositions, 1);
+      var (shiftLeftNextLineSymPositions, shiftRightNextLineSymPositions) =
+          getShiftedSymPosition(nextLineSymPositions);
 
       Map<String, Function> symPosBools = {
         "aboveBelow": (pos) {
@@ -130,10 +131,28 @@ class MachineSchema {
       for (NumberInfo currentNumInfo in currentLine.numsInLineInfo!) {
         for (int pos in currentNumInfo.numIndices) {
           if (symPosBools["aboveBelow"]!(pos) |
-              symPosBools["leftRightAdjacent"]!(pos) |
               symPosBools["leftDiagonals"]!(pos) |
               symPosBools["rightDiagonals"]!(pos)) {
+            // adjacent symbol is in prev or next line
             currentNumInfo.adjacentToSymbol = true;
+            for (SymbolsInfo sym in nextLine.symsInLineInfo!) {
+              if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
+                sym.nearbyNums!.add(currentNumInfo.number);
+              }
+            }
+            for (SymbolsInfo sym in prevLine.symsInLineInfo!) {
+              if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
+                sym.nearbyNums!.add(currentNumInfo.number);
+              }
+            }
+          } else if (symPosBools["leftRightAdjacent"]!(pos)) {
+            // Adjacent symbol is in current row
+            currentNumInfo.adjacentToSymbol = true;
+            for (SymbolsInfo sym in currentLine.symsInLineInfo!) {
+              if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
+                sym.nearbyNums!.add(currentNumInfo.number);
+              }
+            }
           }
         }
       }
