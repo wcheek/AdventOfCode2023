@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:collection/collection.dart';
 
 class NumberInfo {
   final int number;
@@ -11,7 +12,7 @@ class NumberInfo {
 class SymbolsInfo {
   final String symbol;
   final int position;
-  Set<int>? nearbyNums;
+  Set<int> nearbyNums = {};
 
   SymbolsInfo(this.symbol, this.position);
 }
@@ -72,6 +73,8 @@ class LineInfo {
 class MachineSchema {
   List<LineInfo>? _lines;
   List<int>? numsAdjacent;
+  List<SymbolsInfo>? symbolGearRatios;
+  int? totalGearRatio;
 
   MachineSchema({String filePath = "lib/testInput.txt"}) {
     final fileInput = getFileContents(filePath);
@@ -81,12 +84,11 @@ class MachineSchema {
     });
     testLinesForAdjacency(_lines!);
     numsAdjacent = getNumsAdjacent(_lines!);
+
+    symbolGearRatios = getSymbolsWithGearRatio(_lines!);
+    totalGearRatio = calculateTotalGearRatio(symbolGearRatios!);
   }
   List<LineInfo> get lines => _lines!;
-
-  (Set<int?>, Set<int?>) getShiftedSymPosition(Set<int> currentPos) {
-    return (shiftSetLeft(currentPos, 1), shiftSetRight(currentPos, 1));
-  }
 
   void testLinesForAdjacency(List<LineInfo> lines) {
     for (LineInfo currentLine in lines) {
@@ -135,24 +137,24 @@ class MachineSchema {
               symPosBools["rightDiagonals"]!(pos)) {
             // adjacent symbol is in prev or next line
             currentNumInfo.adjacentToSymbol = true;
-            // for (SymbolsInfo sym in nextLine.symsInLineInfo!) {
-            //   if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
-            //     sym.nearbyNums!.add(currentNumInfo.number);
-            //   }
-            // }
-            // for (SymbolsInfo sym in prevLine.symsInLineInfo!) {
-            //   if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
-            //     sym.nearbyNums!.add(currentNumInfo.number);
-            //   }
-            // }
+            for (SymbolsInfo sym in nextLine.symsInLineInfo!) {
+              if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
+                sym.nearbyNums.add(currentNumInfo.number);
+              }
+            }
+            for (SymbolsInfo sym in prevLine.symsInLineInfo!) {
+              if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
+                sym.nearbyNums.add(currentNumInfo.number);
+              }
+            }
           } else if (symPosBools["leftRightAdjacent"]!(pos)) {
             // Adjacent symbol is in current row
             currentNumInfo.adjacentToSymbol = true;
-            // for (SymbolsInfo sym in currentLine.symsInLineInfo!) {
-            //   if ((sym.position == pos - 1) | (sym.position == pos + 1)) {
-            //     sym.nearbyNums!.add(currentNumInfo.number);
-            //   }
-            // }
+            for (SymbolsInfo sym in currentLine.symsInLineInfo!) {
+              if ((sym.position == (pos - 1)) | (sym.position == (pos + 1))) {
+                sym.nearbyNums.add(currentNumInfo.number);
+              }
+            }
           }
         }
       }
@@ -177,6 +179,24 @@ class MachineSchema {
     } on RangeError {
       return LineInfo("", null);
     }
+  }
+
+  List<SymbolsInfo> getSymbolsWithGearRatio(List<LineInfo> lines) {
+    List<SymbolsInfo> returnSyms = [];
+    for (LineInfo line in lines) {
+      for (SymbolsInfo sym in line.symsInLineInfo!) {
+        if (sym.symbol == "*") {
+          if (sym.nearbyNums.length == 2) {
+            returnSyms.add(sym);
+          }
+        }
+      }
+    }
+    return returnSyms;
+  }
+
+  int calculateTotalGearRatio(List<SymbolsInfo> symbols) {
+    return symbols.map((sym) => sym.nearbyNums.reduce((a, b) => a * b)).sum;
   }
 
   static Set<int?> shiftSetLeft(Set<int> origSet, int shiftValue) {
@@ -205,6 +225,10 @@ class MachineSchema {
       }
     });
     return returnSet;
+  }
+
+  static (Set<int?>, Set<int?>) getShiftedSymPosition(Set<int> currentPos) {
+    return (shiftSetLeft(currentPos, 1), shiftSetRight(currentPos, 1));
   }
 
   static List<String> getFileContents(String path) {

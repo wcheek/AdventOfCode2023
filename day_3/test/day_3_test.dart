@@ -129,6 +129,20 @@ void testMachineSchemaMethods() {
     expect(machineSchema.numsAdjacent,
         equals([467, 35, 633, 617, 592, 755, 664, 598]));
   });
+
+  group("part 2", () {
+    test("Get correct symbols with gear ratio", () {
+      expect(
+          machineSchema.symbolGearRatios!.map((syms) => syms.nearbyNums),
+          equals([
+            {467, 35},
+            {755, 598}
+          ]));
+    });
+    test("Get correct final answer", () {
+      expect(machineSchema.totalGearRatio, equals(467835));
+    });
+  });
 }
 
 void main() {
